@@ -285,9 +285,16 @@ struct ftrace_likely_data {
  * semantics rather than c99. This prevents multiple symbol definition errors
  * of extern inline functions at link time.
  * A lot of inline functions can cause havoc with function tracing.
+ *
+ * Only force inlining with clang (the compiler the OPPO upstream tree was
+ * built with). With GCC, always_inline on plain `inline' declarations whose
+ * bodies live in another translation unit (e.g. uclamp_se_set(),
+ * handle_chp_ext_cmd()) fails to build with "function body not available",
+ * while gnu_inline semantics alone make those calls link to the external
+ * definition just fine.
  */
-#if !defined(CONFIG_ARCH_SUPPORTS_OPTIMIZED_INLINING) || \
-	!defined(CONFIG_OPTIMIZE_INLINING)
+#if defined(__clang__) && (!defined(CONFIG_ARCH_SUPPORTS_OPTIMIZED_INLINING) || \
+	!defined(CONFIG_OPTIMIZE_INLINING))
 #define inline \
 	inline __attribute__((always_inline, unused)) notrace __gnu_inline
 #else
