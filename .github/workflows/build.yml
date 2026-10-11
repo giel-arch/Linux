@@ -1,0 +1,93 @@
+name: Build postmarketOS for Oppo A38 (CPH2579)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PMB_PASSWORD: "147147"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install pmbootstrap
+        run: |
+          git clone --depth=1 https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git /tmp/pmbootstrap
+          sudo ln -sf /tmp/pmbootstrap/pmbootstrap.py /usr/local/bin/pmbootstrap
+          python3 /tmp/pmbootstrap/pmbootstrap.py --version
+
+      - name: Patch kernel APKBUILD with source info
+        run: |
+          set -euxo pipefail
+          URL="https://github.com/giel-arch/Linux/archive/${GITHUB_SHA}.tar.gz"
+          curl -sL "$URL" -o /tmp/kernel-src.tar.gz
+          SHA512="$(sha512sum /tmp/kernel-src.tar.gz | cut -d' ' -f1)"
+          rm -f /tmp/kernel-src.tar.gz
+          sed -i \
+            -e "s/__GITHUB_SHA__/${GITHUB_SHA}/g" \
+            -e "s/__SOURCE_SHA512__/${SHA512}/g" \
+            pmaports/device/testing/linux-oppo-a38/APKBUILD
+          grep -n "GITHUB_SHA\|SOURCE_SHA512" pmaports/device/testing/linux-oppo-a38/APKBUILD || true
+
+      - name: Init pmbootstrap (non-interactive)
+        run: |
+          set -euxo pipefail
+          mkdir -p ~/.config /mnt/pmb
+          cat > ~/.config/pmbootstrap_v3.cfg <<EOF
+          [pmbootstrap]
+          aports = ${RUNNER_TEMP}/pmaports-init
+          work = /mnt/pmb
+          device = qemu-amd64
+          ui = console
+          user = user
+          EOF
+          # Answer all prompts with the default
+          set +o pipefail
+          yes '' | pmbootstrap --details-to-stdout init
+          set -o pipefail
+          # Point pmbootstrap at the aports tree shipped in this repository
+          pmbootstrap config aports "${GITHUB_WORKSPACE}/pmaports"
+          pmbootstrap config work /mnt/pmb
+          pmbootstrap config device oppo-a38
+          pmbootstrap config ui console
+          pmbootstrap status
+
+      - name: Build postmarketOS image
+        run: |
+          set -euxo pipefail
+          pmbootstrap --details-to-stdout install --no-interactive \
+            --password "${PMB_PASSWORD}"
+
+      - name: Collect artifacts
+        run: |
+          set -euxo pipefail
+          mkdir -p "${GITHUB_WORKSPACE}/output"
+          pmbootstrap export "${GITHUB_WORKSPACE}/output"
+          ls -la "${GITHUB_WORKSPACE}/output"
+          (cd "${GITHUB_WORKSPACE}/output" && sha256sum * > SHA256SUMS || true)
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmos-oppo-a38-${{ github.sha }}
+          path: |
+            output/boot.img
+            output/rootfs.img
+            output/*.txt
+            output/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
