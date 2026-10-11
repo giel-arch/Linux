@@ -1,0 +1,34 @@
+# Reference: <https://postmarketos.org/devicepkg>
+maintainer=""
+pkgname=device-oppo-a38
+pkgdesc="Oppo A38"
+pkgver=1
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="aarch64"
+options="!check !archcheck"
+depends="
+	linux-oppo-a38
+	mkbootimg-osm0sis
+	postmarketos-base
+	msm-fb-refresher
+"
+makedepends="devicepkg-dev"
+source="
+	deviceinfo
+	kernel-cmdline.conf
+"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+7a56b6251217584a92e60f660da122e5724975ad8d574d4bd7dbc7704700b1350ceabd7a826033ad3fb9a461b6d1bcf031867377b430b8fa6cd7492083186b59  deviceinfo
+73da4058a4ecbd81fa89969f928b0c954adb1f53f1d755faf0028dfa466597a7ee4bd692cce1e78d974dc5c66ea8370ee0edf2a00fe86591468666207dc24fdb  kernel-cmdline.conf
+"

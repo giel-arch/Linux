@@ -1,0 +1,103 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: stock oppo-mt6769_u_14.0_a38_a18 kernel (extracted
+# with scripts/extract-ikconfig from the stock boot image), adjusted for
+# postmarketOS (see git history of pmaports/device/testing/linux-oppo-a38).
+maintainer=""
+pkgname=linux-oppo-a38
+pkgver=4.19.191
+pkgrel=0
+pkgdesc="Oppo A38 (CPH2579) downstream kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="oppo-a38"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	openssl-dev
+	perl
+	linux-headers
+	cpio
+	gzip
+	xz
+	python3
+"
+
+# Source: this repository itself. CI replaces __GITHUB_SHA__ with the commit
+# being built and __SOURCE_SHA512__ with the sha512 of the archive.
+source="
+	$pkgname-__GITHUB_SHA__.tar.gz::https://github.com/giel-arch/Linux/archive/__GITHUB_SHA__.tar.gz
+	$_config
+"
+builddir="$srcdir/Linux-__GITHUB_SHA__"
+_outdir="out"
+_config="config-$_flavor.$arch"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
+		Image.gz mediatek/mt6768.dtb
+}
+
+package() {
+	# MTK's bootloader expects a gzipped kernel image. Pick Image.gz (the
+	# dtb is passed separately via the boot image dtb section, exactly like
+	# the stock boot.img does).
+	if [ -f "$_outdir"/arch/$_carch/boot/Image ]; then
+		rm "$_outdir"/arch/$_carch/boot/Image
+	fi
+	mv "$_outdir"/arch/$_carch/boot/Image.gz "$_outdir"/arch/$_carch/boot/Image
+
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+
+	# Wrap the dtb into the MediaTek dtb table format (same 32 byte header
+	# layout as the dtb section of the stock boot.img).
+	python3 - "$_outdir"/arch/$_carch/boot/dts/mediatek/mt6768.dtb \
+		"$pkgdir"/boot/dtbs/mediatek/mt6768.dtb <<'PYEOF'
+import struct
+import sys
+import os
+
+src, dst = sys.argv[1], sys.argv[2]
+fdt = open(src, 'rb').read()
+assert fdt[:4] == b'\xd0\x0d\xfe\xed', 'not a valid dtb'
+
+total_size = 64 + len(fdt)
+header = struct.pack('>8I',
+    0xd7b7ab1e,   # magic (dt_table_header, MediaTek variant)
+    total_size,   # total_size
+    32,           # header_size
+    32,           # dt_entry_size
+    1,            # dt_entry_count
+    32,           # dt_entries_offset
+    2048,         # page_size
+    0,            # version
+)
+entry = struct.pack('>8I',
+    len(fdt),     # dt_size
+    64,           # dt_offset
+    0, 0, 0, 0, 0, 0,  # id, rev, custom
+)
+os.makedirs(os.path.dirname(dst), exist_ok=True)
+open(dst, 'wb').write(header + entry + fdt)
+PYEOF
+}
+
+sha512sums="
+__SOURCE_SHA512__  linux-oppo-a38-__GITHUB_SHA__.tar.gz
+54e65aa44c1914ec67629ecdf67f069327252b6e918f5b0588186b2da9612d5270d49cb75b82c41ce822b3c49b679fd980d64951c91560e36e2657c4f7b3d995  config-oppo-a38.aarch64
+"
