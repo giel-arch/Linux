@@ -41,7 +41,10 @@ _outdir="out"
 
 prepare() {
 	default_prepare
-	. downstreamkernel_prepare
+	# Tree is clang-era (Android): its own compiler-gcc.h already works with
+	# modern GCC, and the devicepkg-dev replacement expects the old
+	# __LINUX_COMPILER_H include chain and breaks the build.
+	REPLACE_GCCH=0 . downstreamkernel_prepare
 }
 
 build() {
