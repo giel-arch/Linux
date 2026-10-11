@@ -2,7 +2,7 @@
 maintainer=""
 pkgname=device-oppo-a38
 pkgdesc="Oppo A38"
-pkgver=1
+pkgver=2
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -30,5 +30,5 @@ package() {
 
 sha512sums="
 7a56b6251217584a92e60f660da122e5724975ad8d574d4bd7dbc7704700b1350ceabd7a826033ad3fb9a461b6d1bcf031867377b430b8fa6cd7492083186b59  deviceinfo
-73da4058a4ecbd81fa89969f928b0c954adb1f53f1d755faf0028dfa466597a7ee4bd692cce1e78d974dc5c66ea8370ee0edf2a00fe86591468666207dc24fdb  kernel-cmdline.conf
+707c8f59d0c0e5da68902358b4d9532894bb725b37fd516cedc58f197261687e306f109b62d285e31bed2f03994c7a8b4db73ad04fb38e2d0fbaa833bcac1919  kernel-cmdline.conf
 "
