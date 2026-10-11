@@ -20,6 +20,7 @@ makedepends="
 	devicepkg-dev
 	findutils
 	flex
+	gcc6
 	openssl-dev
 	perl
 	linux-headers
@@ -28,6 +29,15 @@ makedepends="
 	xz
 	python3
 "
+
+# Compiler: GCC 6. The 4.19 MTK vendor code (sched extensions etc.) does not
+# build with GCC >= 10 ("inlining failed in call to 'always_inline': function
+# body not available"). Same pattern as other downstream pmOS kernel ports.
+if [ "${CC:0:5}" != "gcc6-" ]; then
+	CC="gcc6-$CC"
+	HOSTCC="gcc6-gcc"
+	CROSS_COMPILE="gcc6-$CROSS_COMPILE"
+fi
 
 # Source: this repository itself. CI replaces __GITHUB_SHA__ with the commit
 # being built and __SOURCE_SHA512__ with the sha512 of the archive.
