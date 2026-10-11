@@ -69,6 +69,7 @@ jobs:
           cd "${GITHUB_WORKSPACE}/pmaports"
           git init -q -b main
           git remote add upstream https://gitlab.postmarketos.org/postmarketOS/pmaports.git
+          git fetch -q --depth=1 upstream main:refs/remotes/upstream/main
           git add -A
           git -c user.name=ci -c user.email=ci@example.invalid commit -qm "pmaports tree for oppo-a38"
           cd "${GITHUB_WORKSPACE}"
