@@ -53,6 +53,7 @@ jobs:
           work = /mnt/pmb
           device = qemu-amd64
           ui = none
+          service_manager = openrc
           user = user
           EOF
           # Answer all prompts with the default
@@ -64,6 +65,7 @@ jobs:
           pmbootstrap config work /mnt/pmb
           pmbootstrap config device oppo-a38
           pmbootstrap config ui none
+          pmbootstrap config service_manager openrc
           # pmbootstrap requires the aports dir to be a git repo with an
           # upstream pmaports remote
           cd "${GITHUB_WORKSPACE}/pmaports"
