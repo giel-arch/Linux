@@ -78,8 +78,9 @@ jobs:
       - name: Build postmarketOS image
         run: |
           set -euxo pipefail
-          pmbootstrap --details-to-stdout install --no-interactive \
-            --password "${PMB_PASSWORD}"
+          pmbootstrap --details-to-stdout install \
+            --password "${PMB_PASSWORD}" \
+            --no-fde --no-sshd --no-firewall
 
       - name: Collect artifacts
         run: |
