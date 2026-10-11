@@ -31,13 +31,13 @@ makedepends="
 
 # Source: this repository itself. CI replaces __GITHUB_SHA__ with the commit
 # being built and __SOURCE_SHA512__ with the sha512 of the archive.
+_config="config-$_flavor.$arch"
 source="
 	$pkgname-__GITHUB_SHA__.tar.gz::https://github.com/giel-arch/Linux/archive/__GITHUB_SHA__.tar.gz
 	$_config
 "
 builddir="$srcdir/Linux-__GITHUB_SHA__"
 _outdir="out"
-_config="config-$_flavor.$arch"
 
 prepare() {
 	default_prepare
