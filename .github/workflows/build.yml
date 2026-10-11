@@ -45,7 +45,8 @@ jobs:
       - name: Init pmbootstrap (non-interactive)
         run: |
           set -euxo pipefail
-          mkdir -p ~/.config /mnt/pmb
+          sudo mkdir -p /mnt/pmb && sudo chown runner /mnt/pmb
+          mkdir -p ~/.config
           cat > ~/.config/pmbootstrap_v3.cfg <<EOF
           [pmbootstrap]
           aports = ${RUNNER_TEMP}/pmaports-init
