@@ -52,7 +52,7 @@ jobs:
           aports = ${RUNNER_TEMP}/pmaports-init
           work = /mnt/pmb
           device = qemu-amd64
-          ui = console
+          ui = none
           user = user
           EOF
           # Answer all prompts with the default
@@ -63,7 +63,7 @@ jobs:
           pmbootstrap config aports "${GITHUB_WORKSPACE}/pmaports"
           pmbootstrap config work /mnt/pmb
           pmbootstrap config device oppo-a38
-          pmbootstrap config ui console
+          pmbootstrap config ui none
           # pmbootstrap requires the aports dir to be a git repo with an
           # upstream pmaports remote
           cd "${GITHUB_WORKSPACE}/pmaports"
