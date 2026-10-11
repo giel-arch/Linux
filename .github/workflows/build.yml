@@ -97,9 +97,7 @@ jobs:
         with:
           name: pmos-oppo-a38-${{ github.sha }}
           path: |
-            output/boot.img
-            output/rootfs.img
-            output/*.txt
+            output/*.img
             output/SHA256SUMS
           if-no-files-found: error
           retention-days: 30
