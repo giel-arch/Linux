@@ -35,7 +35,11 @@ extern unsigned long long sched_clock(void);
 #ifdef CONFIG_MTK_ENG_BUILD
 int printk_ctrl;
 #else
-int printk_ctrl = 1;
+/* postmarketOS: default to uart log enabled; the vendor default (1) silenced
+ * the preferred console on user builds and LK appends printk.disable_uart=1
+ * after the boot image cmdline anyway. printk.force_uart=1 on the cmdline
+ * also forces this on. */
+int printk_ctrl = 0;
 #endif
 
 //#ifdef OPLUS_BUG_STABILITY

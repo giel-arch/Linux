@@ -41,12 +41,11 @@ static inline unsigned long get_linear_memory_size(void)
 
 static void aee_exception_reboot(void)
 {
-	struct arm_smccc_res res;
-	int opt1 = 1, opt2 = 0;
-
-	arm_smccc_smc(PSCI_1_1_FN_SYSTEM_RESET2,
-		PSCI_1_1_RESET2_TYPE_VENDOR | opt1,
-		opt2, 0, 0, 0, 0, 0, &res);
+	/* Disabled for postmarketOS debugging: the vendor build reboots the
+	 * device via PSCI SYSTEM_RESET2 immediately after an exception dump,
+	 * bypassing panic_timeout entirely, which makes the panic output
+	 * impossible to read. With this disabled the kernel follows
+	 * panic_timeout (0 = stay alive, screen keeps the panic text). */
 }
 
 
