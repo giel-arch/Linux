@@ -2,7 +2,7 @@
 maintainer=""
 pkgname=device-oppo-a38
 pkgdesc="Oppo A38"
-pkgver=3
+pkgver=4
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -12,6 +12,7 @@ depends="
 	linux-oppo-a38
 	mkbootimg-osm0sis
 	postmarketos-base
+	postmarketos-mkinitfs-hook-debug-shell
 	msm-fb-refresher
 "
 makedepends="devicepkg-dev"
@@ -30,5 +31,5 @@ package() {
 
 sha512sums="
 72cbf92d0eebc623c1c7153349b765355756f1a1f2b1e96c034206e334a19e3006f27a45ba5db175c4312eb8452147286f7b69b3a656b81398c56c39eec6b1ee  deviceinfo
-8170e97f80279a29215a0727f3e5857e2cf5499807e263eab9d40630b75e9c3429ae8b63e4c6adf1553b0a91b78dc86efb024fd6379a1ab8241e79b278db7d34  kernel-cmdline.conf
+072670449a9c7cb71c378799b0547f3ef3952ecdb77226646c0b296bbad5728e895d5a1777acfa41163a23255f12a9d48d7e0b25ef9c4bff94a88c8991355734  kernel-cmdline.conf
 "
