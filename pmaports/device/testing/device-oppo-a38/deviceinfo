@@ -18,6 +18,9 @@ deviceinfo_screen_height="1612"
 
 # Bootloader related
 deviceinfo_flash_method="fastboot"
+
+# Kernel 4.19 has no initramfs zstd support (mkinitfs edge defaults to zstd)
+deviceinfo_initfs_compression="gzip"
 deviceinfo_generate_bootimg="true"
 deviceinfo_flash_pagesize="2048"
 deviceinfo_header_version="2"
