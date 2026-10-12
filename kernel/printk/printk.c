@@ -1941,8 +1941,13 @@ static void call_console_drivers(const char *ext_text, size_t ext_len,
 
 	for_each_console(con) {
 #ifdef CONFIG_PRINTK_MTK_UART_CONSOLE
-		/* if uart printk disabled */
-		if (!mt_get_uartlog_status() && (con->flags & CON_CONSDEV))
+		/* if uart printk disabled, only silence the UART console.
+		 * The upstream check skipped the preferred (CON_CONSDEV)
+		 * console, which with user builds (printk_ctrl defaults to
+		 * disable) silenced the framebuffer console too, leaving no
+		 * console output at all. */
+		if (!mt_get_uartlog_status() && (con->flags & CON_CONSDEV) &&
+		    !strncmp(con->name, "ttyMT", 5))
 			continue;
 #endif
 		if (exclusive_console && con != exclusive_console)
