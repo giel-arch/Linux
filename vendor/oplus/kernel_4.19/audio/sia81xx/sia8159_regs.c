@@ -293,14 +293,17 @@ const struct regmap_config sia8159_regmap_config = {
 static int sia8159_check_chip_id(
 	struct regmap *regmap)
 {
-	char val = 0;
+	/* sia81xx_regmap_read() with reg_num==1 writes a full unsigned int;
+	 * a 1-byte buffer overflows the stack frame (stack-protector panic
+	 * on GCC builds). */
+	unsigned int val = 0;
 	int i = 0;
 
 	if (0 != sia81xx_regmap_read(regmap, SIA8159_REG_CHIP_ID, 1, &val))
 		return -1;
 
 	for (i = 0; i < ARRAY_SIZE(chip_id_ranges); i++) {
-		if (val >= chip_id_ranges[i].begin && val <= chip_id_ranges[i].end)
+		if ((char)val >= chip_id_ranges[i].begin && (char)val <= chip_id_ranges[i].end)
 			return 0;
 	}
 
@@ -312,7 +315,7 @@ static void sia8159_chip_on(
 	unsigned int scene,
 	unsigned int channel_num)
 {
-	char val = 0;
+	unsigned int val = 0;
 
 	if (AUDIO_SCENE_NUM <= scene || SIA81XX_CHANNEL_NUM <= channel_num)
 		return;
@@ -366,6 +369,7 @@ static void sia8159_check_trimming(
 	static char defaults[reg_num] = {0x76, 0x66, 0x70};
 	uint8_t vals[reg_num] = {0};
 	uint8_t vals_ops[reg_num] = {0};
+	unsigned int uval = 0;
 	uint8_t crc = 0;
 	uint8_t i, tmp;
 
@@ -396,11 +400,11 @@ static void sia8159_check_trimming(
 		pr_warn("[ warn][%s] %s: trimming failed !! \r\n", 
 			LOG_FLAG, __func__);
 
-		if (0 != sia81xx_regmap_read(regmap, SIA8159_REG_ALGO_CFG2, 1, (char *)vals))
+		if (0 != sia81xx_regmap_read(regmap, SIA8159_REG_ALGO_CFG2, 1, &uval))
 			return;
 
-		*vals |= 0x02;
-		if (0 != sia81xx_regmap_write(regmap, SIA8159_REG_ALGO_CFG2, 1, (char *)vals))
+		uval |= 0x02;
+		if (0 != sia81xx_regmap_write(regmap, SIA8159_REG_ALGO_CFG2, 1, (char *)&uval))
 			return;
 
 		if (en_peak_current_limit) {
@@ -416,11 +420,11 @@ static void sia8159_check_trimming(
 		pr_info("[ info][%s] %s: trimming ops \r\n",
 			LOG_FLAG, __func__);
 
-		if (0 != sia81xx_regmap_read(regmap, SIA8159_REG_ALGO_CFG2, 1, (char *)vals))
+		if (0 != sia81xx_regmap_read(regmap, SIA8159_REG_ALGO_CFG2, 1, &uval))
 			return;
 
-		*vals |= 0x02;
-		if (0 != sia81xx_regmap_write(regmap, SIA8159_REG_ALGO_CFG2, 1, (char *)vals))
+		uval |= 0x02;
+		if (0 != sia81xx_regmap_write(regmap, SIA8159_REG_ALGO_CFG2, 1, (char *)&uval))
 			return;
 
 		if (vals_ops[2] >= 0x20)
@@ -438,7 +442,7 @@ static void sia8159_check_trimming(
 static bool sia8159_get_chip_en(
 	struct regmap *regmap)
 {
-	char val = 0;
+	unsigned int val = 0;
 	if (0 != sia81xx_regmap_read(regmap, SIA8159_REG_ALGO_CFG1, 1, &val))
 		return false;
 	if (val & 0x01)

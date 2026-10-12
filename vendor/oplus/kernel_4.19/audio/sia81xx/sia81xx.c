@@ -1173,7 +1173,7 @@ static ssize_t sia81xx_cmd_store(
 		{
 			unsigned char addr = (unsigned char)simple_strtoul(
 				strsep(&cur, split_symb), &after, 16);
-			char val;
+			unsigned int val;
 
 			if(0 != sia81xx_regmap_read(sia81xx->regmap, addr, 1, &val)) {
 				pr_debug("[debug][%s] %s: err regmap_read \r\n",
@@ -1732,7 +1732,7 @@ int sia81xx_volme_boost_get(
 {
 #ifndef CONFIG_SND_SOC_OPLUS_PA_MANAGER
         unsigned char addr = 0x02;
-        char val;
+        unsigned int val;
         const char voltage[] = {0xCC,0xC8,0xC6,0xCC};
         int vol_length = 4;
         int i;
@@ -1746,7 +1746,7 @@ int sia81xx_volme_boost_get(
                         LOG_FLAG, __func__);
         } else {
                 for(i = 0;i < vol_length;i++){
-                        if(val == voltage[i]){
+                        if((char)val == voltage[i]){
                                 ucontrol->value.integer.value[0] = i;
                                 pr_debug("[debug][%s] %s: addr = 0x%02x, val = 0x%x \r\n",
                                         LOG_FLAG, __func__, addr, val);
@@ -1762,7 +1762,7 @@ int sia81xx_volme_boost_get(
 	//sia81xx_dev_t *sia81xx = snd_soc_codec_get_drvdata(codec);
 
 	unsigned char addr = 0x02;
-	char val;
+	unsigned int val;
 	const char voltage[] = {0xCC,0xC8,0xC8,0xC6,0xCC,0xCC};
 	int vol_length = 6;
 	int i;
@@ -1772,7 +1772,7 @@ int sia81xx_volme_boost_get(
 			LOG_FLAG, __func__);
 	} else {
 		for (i = 0;i < vol_length;i++) {
-			if (val == voltage[i]) {
+			if ((char)val == voltage[i]) {
 				ucontrol->value.integer.value[0] = i;
 				pr_debug("[debug][%s] %s: addr = 0x%02x, val = 0x%x \r\n",
 				LOG_FLAG, __func__, addr, val);
