@@ -5,7 +5,7 @@
 maintainer=""
 pkgname=linux-oppo-a38
 pkgver=4.19.191
-pkgrel=2
+pkgrel=3
 pkgdesc="Oppo A38 (CPH2579) downstream kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -112,5 +112,5 @@ PYEOF
 
 sha512sums="
 __SOURCE_SHA512__  linux-oppo-a38-__GITHUB_SHA__.tar.gz
-91c74f46bb08245b5a333a7059357d16ba1ea992877b14419e4dc5c5db24d53b41968e4c7634552de58b09b91dcaead29077f62e967886973e66c486327561a3  config-oppo-a38.aarch64
+4c5e112c9bcec2552bbeb4544d3e66016128e956e6686325b517136b0a41231bf59dff3aa96e9cd5ec53c3c61ed0eced11eda5cfe0620e5dbb6d45576554c13c  config-oppo-a38.aarch64
 "
