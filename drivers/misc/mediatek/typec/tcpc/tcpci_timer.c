@@ -431,7 +431,7 @@ static inline void on_pe_timer_timeout(
 #ifdef OPLUS_FEATURE_CHG_BASIC
 /********* workaround MO.230913213000256759: sc6607 workaround for pd abnormal start*********/
 	case PD_TIMER_INT_INVAILD:
-		TCPC_INFO("check int invaild\n");
+		pr_debug("check int invaild\n");/* spam floods ring buffer */
 		tcpc->recv_msg_cnt = 0;
 		tcpc_restart_timer(tcpc, PD_TIMER_INT_INVAILD);
 		break;

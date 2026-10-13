@@ -5,7 +5,7 @@
 maintainer=""
 pkgname=linux-oppo-a38
 pkgver=4.19.191
-pkgrel=4
+pkgrel=5
 pkgdesc="Oppo A38 (CPH2579) downstream kernel fork"
 arch="aarch64"
 _carch="arm64"
