@@ -3946,7 +3946,10 @@ static int do_register_con_driver(const struct consw *csw, int first, int last)
 	struct module *owner = csw->owner;
 	struct con_driver *con_driver;
 	const char *desc;
-	int i, retval;
+	int i, retval = -EINVAL;
+
+	pr_info("fbcon-debug: do_register_con_driver(%pF) owner=%p\n",
+		csw->con_startup, owner);
 
 	WARN_CONSOLE_UNLOCKED();
 
@@ -4102,7 +4105,10 @@ int do_take_over_console(const struct consw *csw, int first, int last, int deflt
 {
 	int err;
 
+	pr_info("fbcon-debug: do_take_over_console %pF %d-%d\n",
+		csw->con_startup, first, last);
 	err = do_register_con_driver(csw, first, last);
+	pr_info("fbcon-debug: do_register_con_driver -> %d\n", err);
 	/*
 	 * If we get an busy error we still want to bind the console driver
 	 * and return success, as we may have unbound the console driver
@@ -4110,8 +4116,10 @@ int do_take_over_console(const struct consw *csw, int first, int last, int deflt
 	 */
 	if (err == -EBUSY)
 		err = 0;
-	if (!err)
-		do_bind_con_driver(csw, first, last, deflt);
+	if (!err) {
+		int err2 = do_bind_con_driver(csw, first, last, deflt);
+		pr_info("fbcon-debug: do_bind_con_driver -> %d\n", err2);
+	}
 
 	return err;
 }

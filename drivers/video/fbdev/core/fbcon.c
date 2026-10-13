@@ -518,6 +518,9 @@ static int do_fbcon_takeover(int show_logo)
 {
 	int err, i;
 
+	pr_info("fbcon-debug: do_fbcon_takeover(show_logo=%d) num_registered_fb=%d\n",
+		show_logo, num_registered_fb);
+
 	if (!num_registered_fb)
 		return -ENODEV;
 
@@ -529,6 +532,7 @@ static int do_fbcon_takeover(int show_logo)
 
 	err = do_take_over_console(&fb_con, first_fb_vc, last_fb_vc,
 				fbcon_is_default);
+	pr_info("fbcon-debug: do_take_over_console -> %d\n", err);
 
 	if (err) {
 		for (i = first_fb_vc; i <= last_fb_vc; i++)
@@ -2932,6 +2936,9 @@ static int fbcon_fb_registered(struct fb_info *info)
 
 	idx = info->node;
 	fbcon_select_primary(info);
+
+	pr_info("fbcon-debug: fbcon_fb_registered idx=%d info_idx=%d map_boot0=%d\n",
+		idx, info_idx, con2fb_map_boot[0]);
 
 	if (deferred_takeover) {
 		pr_info("fbcon: Deferring console take-over\n");
