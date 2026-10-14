@@ -2965,6 +2965,22 @@ static int fbcon_fb_registered(struct fb_info *info)
 	return ret;
 }
 
+/*
+ * postmarketOS: call fbcon_fb_registered() directly from register_framebuffer.
+ * On this platform the FB_EVENT_FB_REGISTERED notifier path never reaches us
+ * (root cause under investigation), leaving the vt console bound to
+ * dummy_con forever and no console text on the display.
+ */
+#ifdef CONFIG_FRAMEBUFFER_CONSOLE
+void fbcon_force_registered(struct fb_info *info)
+{
+	pr_info("fbcon-debug: direct fbcon_fb_registered call for node %d\n",
+		info->node);
+	fbcon_fb_registered(info);
+}
+EXPORT_SYMBOL_GPL(fbcon_force_registered);
+#endif
+
 static void fbcon_fb_blanked(struct fb_info *info, int blank)
 {
 	struct fbcon_ops *ops = info->fbcon_par;

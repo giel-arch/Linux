@@ -1634,6 +1634,12 @@ module_param_named_unsafe(lockless_register_fb, lockless_register_fb, bool, 0400
 MODULE_PARM_DESC(lockless_register_fb,
 	"Lockless framebuffer registration for debugging [default=off]");
 
+#ifdef CONFIG_FRAMEBUFFER_CONSOLE
+/* Provided by fbcon.c; the FB_EVENT_FB_REGISTERED notifier path does not
+ * reach fbcon on this platform, so register_framebuffer calls it directly. */
+extern void fbcon_force_registered(struct fb_info *info);
+#endif
+
 static int do_register_framebuffer(struct fb_info *fb_info)
 {
 	int i, ret;
@@ -1712,6 +1718,13 @@ static int do_register_framebuffer(struct fb_info *fb_info)
 	ret = 0;
 
 	fb_notifier_call_chain(FB_EVENT_FB_REGISTERED, &event);
+#ifdef CONFIG_FRAMEBUFFER_CONSOLE
+	/* postmarketOS: the notifier chain does not reach fbcon on this
+	 * platform; invoke the registration handler directly so the vt
+	 * console can bind to the framebuffer. Runs with console_lock held,
+	 * which is what fbcon_fb_registered expects. */
+	fbcon_force_registered(fb_info);
+#endif
 	unlock_fb_info(fb_info);
 unlock_console:
 	if (!lockless_register_fb)
