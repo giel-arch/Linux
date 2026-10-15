@@ -84,7 +84,7 @@ jobs:
           set -euxo pipefail
           pmbootstrap --details-to-stdout install \
             --password "${PMB_PASSWORD}" \
-            --no-fde --no-sshd --no-firewall
+            --no-fde --no-firewall
 
       - name: Collect artifacts
         run: |
