@@ -3057,12 +3057,12 @@ static const struct dev_pm_ops mtkfb_pm_ops = {
 
 int mtkfb_get_scanout_info(u64 *pa, u32 *stride, size_t *size)
 {
-	if (!fbdev || !fbdev->fb_info)
+	if (!mtkfb_fbi)
 		return -ENODEV;
 
-	*pa = fbdev->fb_info->fix.smem_start;
-	*stride = fbdev->fb_info->fix.line_length;
-	*size = fbdev->fb_info->fix.smem_len;
+	*pa = mtkfb_fbi->fix.smem_start;
+	*stride = mtkfb_fbi->fix.line_length;
+	*size = mtkfb_fbi->fix.smem_len;
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mtkfb_get_scanout_info);
