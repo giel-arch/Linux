@@ -42,6 +42,18 @@ jobs:
             pmaports/device/testing/linux-oppo-a38/APKBUILD
           grep -n "GITHUB_SHA\|SOURCE_SHA512" pmaports/device/testing/linux-oppo-a38/APKBUILD || true
 
+      - name: Prepare full pmaports tree (upstream + our device packages)
+        run: |
+          set -euxo pipefail
+          git clone --depth=1 https://gitlab.postmarketos.org/postmarketOS/pmaports.git \
+            /home/runner/pmaports
+          # overlay our device packages on top of upstream
+          cp -a "${GITHUB_WORKSPACE}/pmaports/device/testing/device-oppo-a38" \
+                /home/runner/pmaports/device/testing/
+          cp -a "${GITHUB_WORKSPACE}/pmaports/device/testing/linux-oppo-a38" \
+                /home/runner/pmaports/device/testing/
+          ls /home/runner/pmaports/device/testing/ | grep oppo
+
       - name: Init pmbootstrap (non-interactive)
         run: |
           set -euxo pipefail
@@ -49,7 +61,7 @@ jobs:
           mkdir -p ~/.config
           cat > ~/.config/pmbootstrap_v3.cfg <<EOF
           [pmbootstrap]
-          aports = ${RUNNER_TEMP}/pmaports-init
+          aports = /home/runner/pmaports
           work = /mnt/pmb
           device = qemu-amd64
           ui = phosh
@@ -60,21 +72,11 @@ jobs:
           set +o pipefail
           yes '' | pmbootstrap --details-to-stdout init
           set -o pipefail
-          # Point pmbootstrap at the aports tree shipped in this repository
-          pmbootstrap config aports "${GITHUB_WORKSPACE}/pmaports"
+          pmbootstrap config aports /home/runner/pmaports
           pmbootstrap config work /mnt/pmb
           pmbootstrap config device oppo-a38
           pmbootstrap config ui phosh
           pmbootstrap config service_manager openrc
-          # pmbootstrap requires the aports dir to be a git repo with an
-          # upstream pmaports remote
-          cd "${GITHUB_WORKSPACE}/pmaports"
-          git init -q -b main
-          git remote add upstream https://gitlab.postmarketos.org/postmarketOS/pmaports.git
-          git fetch -q --depth=1 upstream main:refs/remotes/upstream/main
-          git add -A
-          git -c user.name=ci -c user.email=ci@example.invalid commit -qm "pmaports tree for oppo-a38"
-          cd "${GITHUB_WORKSPACE}"
           pmbootstrap status
 
       - name: Build postmarketOS image
