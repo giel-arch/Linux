@@ -52,7 +52,7 @@ jobs:
           aports = ${RUNNER_TEMP}/pmaports-init
           work = /mnt/pmb
           device = qemu-amd64
-          ui = none
+          ui = phosh
           service_manager = openrc
           user = user
           EOF
@@ -64,7 +64,7 @@ jobs:
           pmbootstrap config aports "${GITHUB_WORKSPACE}/pmaports"
           pmbootstrap config work /mnt/pmb
           pmbootstrap config device oppo-a38
-          pmbootstrap config ui none
+          pmbootstrap config ui phosh
           pmbootstrap config service_manager openrc
           # pmbootstrap requires the aports dir to be a git repo with an
           # upstream pmaports remote
