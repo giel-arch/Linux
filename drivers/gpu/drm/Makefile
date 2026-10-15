@@ -110,3 +110,4 @@ obj-$(CONFIG_DRM_XEN) += xen/
 #ifdef OPLUS_BUG_STABILITY
 obj-$(CONFIG_DRM_MEDIATEK) += oplus/
 #endif
+obj-$(CONFIG_DRM_MTKFBDRM) += mtkfbdrm/

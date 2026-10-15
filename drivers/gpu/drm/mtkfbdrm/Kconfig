@@ -1,0 +1,11 @@
+config DRM_MTKFBDRM
+	tristate "DRM KMS over MTK legacy framebuffer (mtkfb)"
+	depends on DRM
+	select DRM_KMS_HELPER
+	select DRM_GEM_CMA_HELPER
+	select VIDEOMODE_HELPERS
+	help
+	  Exposes a minimal DRM/KMS device whose scanout is the framebuffer
+	  of the legacy mtkfb driver.  Needed for Wayland compositors
+	  (phosh/mutter) on MTK devices that only ship the legacy fbdev
+	  display stack.

@@ -3055,6 +3055,18 @@ static const struct dev_pm_ops mtkfb_pm_ops = {
 	.restore_noirq = mtkfb_pm_restore_noirq,
 };
 
+int mtkfb_get_scanout_info(u64 *pa, u32 *stride, size_t *size)
+{
+	if (!fbdev || !fbdev->fb_info)
+		return -ENODEV;
+
+	*pa = fbdev->fb_info->fix.smem_start;
+	*stride = fbdev->fb_info->fix.line_length;
+	*size = fbdev->fb_info->fix.smem_len;
+	return 0;
+}
+EXPORT_SYMBOL_GPL(mtkfb_get_scanout_info);
+
 static struct platform_driver mtkfb_driver = {
 	.probe = mtkfb_probe,
 	.remove = mtkfb_remove,
