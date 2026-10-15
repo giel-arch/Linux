@@ -112,5 +112,5 @@ PYEOF
 
 sha512sums="
 __SOURCE_SHA512__  linux-oppo-a38-__GITHUB_SHA__.tar.gz
-7e60d7eb4c9256f7831b7b69f7b18cceac09cc6fede30bedb7d2ec1c6c66e88cb313bf7cbedff33b0163a733a871a640f7cbd59f1355c45dfabfe273a003f9ac  config-oppo-a38.aarch64
+473d2aa7bc6ff891f8cee54a989c282730a72e61634c28e448f5144cf9b365ee8f2a4b1a85f6fbed27f6feed7194e58d8377246522fa471617b440e1642ac25a  config-oppo-a38.aarch64
 "
